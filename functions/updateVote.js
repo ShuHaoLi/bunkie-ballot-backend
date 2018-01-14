@@ -6,43 +6,39 @@ const VOTES = 'Votes';
 const VOTES_LISTING_ID = 'listing_id';
 const VOTES_VOTER_ID = 'voter_id';
 const VOTES_APPLICANT_ID = 'applicant_id';
-const VOTES_VOTE = 'vote';
 
 /**
  * Add or update vote with listing, voter, applicant, and vote value to db.
  *
- * @param {string} message Message to pass through
- * @returns {string}
+ * @param {number} listing_id Listing id
+ * @param {number} voter_id Voter id
+ * @param {number} applicant_id Applicant id
+ * @param {number} vote Vote
+ * @returns {any}
  *
  */
-module.exports = (message, context, callback) => {
+module.exports = (listing_id, voter_id, applicant_id, vote, context, callback) => {
 
     const query = {};
-    query[VOTES_LISTING_ID] = 1;
-    query[VOTES_VOTER_ID] = 1;
-    query[VOTES_APPLICANT_ID] = 2;
-
-    const newData = {};
-    newData[VOTES_LISTING_ID] = 1;
-    newData[VOTES_VOTER_ID] = 1;
-    newData[VOTES_APPLICANT_ID] = 2;
-    newData[VOTES_VOTE] = 5;
+    query[VOTES_LISTING_ID] = listing_id;
+    query[VOTES_VOTER_ID] = voter_id;
+    query[VOTES_APPLICANT_ID] = applicant_id;
 
     MongoClient.connect(url, function(err, client) {
         console.log('connected');
         const db = client.db(DB_NAME);
-        updateDocument(db, query, newData, function(data) {
+        updateDocument(db, query, vote, function(data) {
             console.log(data);
 
             client.close();
-            callback(null, message);
+            callback(null);
         });
     });
 };
 
-const updateDocument = function(db, query, newData, callback) {
+const updateDocument = function(db, query, newVote, callback) {
     const collection = db.collection(VOTES);
-    collection.updateOne(query, {$set: newData}, function(err, result) {
+    collection.updateOne(query, {$set: {vote: newVote}}, function(err, result) {
         callback(result);
     });
 }
