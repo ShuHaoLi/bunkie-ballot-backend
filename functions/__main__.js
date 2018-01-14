@@ -14,6 +14,8 @@ module.exports = (sender, receiver, message, context, callback) => {
         recipient: sender, // (required)
         body: message // (required)
     }, (err, result) => {
-        updateVote(message, context, callback);
+        updateVote(message, context, function(err, data) {
+            callback(null, JSON.stringify(data));
+        });
     });
 };
